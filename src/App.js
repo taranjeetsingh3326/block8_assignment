@@ -39,8 +39,11 @@ class App extends React.Component {
       facebookUsername : '',
       facebookUsernameError : '',
       instagramUrl : '',
+      instagramUrlError : '',
       twitterUrl: '',
-      pinterestUrl : ''
+      twitterUrlError: '',
+      pinterestUrl : '',
+      pinterestUrlError : ''
     }
   }
 
@@ -60,17 +63,44 @@ class App extends React.Component {
     }
     let facebookUrl = `https://www.facebook.com/${ this.state.facebookUsername}`
 
-    let response = await socialService.fetchStatus( facebookUrl);
+    let response = await socialService.checkValidUrl( facebookUrl);
     console.log(
-      '**response**', response
+      '**response**', response.data
     );
-    this.setState(
-      urls
-    )
+    urls.instagramUrlError = '';
+    urls.twitterUrlError = '';
+    urls.pinterestUrlError = '';
+    if( response && response.data && response.data.status === 200 ){
+      response = await socialService.checkValidUrl( urls.instagramUrl );
+      if( response.data.status !== 200 ){
+        urls.instagramUrl = ''
+        urls.instagramUrlError = 'Profile Not exist'
+      }
+      response = await socialService.checkValidUrl( urls.twitterUrl );
+      
+      if( response.data.status !== 200 ){
+        urls.twitterUrl = ''
+        urls.twitterUrlError = 'Profile Not exist'
+      }
+      response = await socialService.checkValidUrl( urls.pinterestUrl );
+      if( response.data.status !== 200 ){
+        urls.pinterestUrl = ''
+        urls.pinterestUrlError = 'Profile Not exist'
+      }
+      this.setState(
+        urls
+      )
+    } else{
+      NotificationManager.error('Please enter valid Username', 'Error!');
+      return false;
+    }    
   }
 
   render() {
-    const { facebookUsername, instagramUrl, twitterUrl, pinterestUrl } = this.state;
+    const { 
+      facebookUsername, instagramUrl, twitterUrl, pinterestUrl,
+      instagramUrlError, twitterUrlError, pinterestUrlError
+    } = this.state;
     return (
       <div className="App">
         <header className="" style={style.appheader}>
@@ -110,34 +140,40 @@ class App extends React.Component {
             
           </div>
           <div>
-            {instagramUrl !== '' &&
+            { (instagramUrl !== ''  || instagramUrlError) &&
             <p>
-              Instagram URL is : 
+              Instagram URL is : {instagramUrlError}
+              {instagramUrl !== '' &&
               <a href={instagramUrl} target="_blank" rel="noopener noreferrer">
                <span style={style.urls}>
                {instagramUrl}
                </span>
               </a>
+              }
             </p>
             }
-            {twitterUrl !== '' &&
+            { (twitterUrl !== ''  || twitterUrlError) &&
             <p>
-              Twitter URL is : 
+              Twitter URL is : {twitterUrlError}
+              {twitterUrl !== '' &&
               <a href={twitterUrl} target="_blank" rel="noopener noreferrer">
                <span style={style.urls}>
                {twitterUrl}
                </span>
               </a>
+              }
             </p>
             }
-            {pinterestUrl !== '' &&
+            {(pinterestUrl !== '' || pinterestUrlError) &&
             <p>
-              Pinterest URL is : 
+              Pinterest URL is : {pinterestUrlError}
+              {pinterestUrl !== '' &&
               <a href={pinterestUrl} target="_blank" rel="noopener noreferrer">
                <span style={style.urls}>
                {pinterestUrl}
                </span>
               </a>
+              }
             </p>
             }
           </div>
