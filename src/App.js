@@ -1,26 +1,140 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import {NotificationManager} from 'react-notifications';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+let style = {
+  appheader : {
+    backgroundColor: '#282c34',
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    fontSize: 'calc(10px + 2vmin)',
+    color: 'white'
+  },
+  input : {
+    padding: 5,
+    borderRadius: '10px'
+  },
+  button : {
+    padding : 5,
+    margin :5,
+    borderRadius : 5,
+    cursor:'pointer',
+    backgroundColor: '#4267b2',
+    borderColor: '#4267b2',
+    color : 'white'
+  },
+  urls : {
+    backgroundColor:'white',
+    margin : 5,
+    padding : '0 5px'
+  }
+}
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      facebookUsername : '',
+      facebookUsernameError : '',
+      instagramUrl : '',
+      twitterUrl: '',
+      pinterestUrl : ''
+    }
+  }
+
+  checkValidUrls = () => {
+    if( this.state.facebookUsername === '' ){
+      NotificationManager.error('Please enter valid Username', 'Error!');
+      this.setState({
+        facebookUsernameError : 'Please enter valid Username'
+      });
+     return false;
+    }
+
+    this.setState({
+      instagramUrl : `https://www.instagram.com/${ this.state.facebookUsername}`,
+      twitterUrl : `https://twitter.com/${ this.state.facebookUsername}`,
+      pinterestUrl : `https://in.pinterest.com/${ this.state.facebookUsername}`
+    })
+  }
+
+  render() {
+    const { facebookUsername, instagramUrl, twitterUrl, pinterestUrl } = this.state;
+    return (
+      <div className="App">
+        <header className="" style={style.appheader}>
+          <div>
+            <h3>
+              Check Valid Urls
+            </h3>
+          </div>
+          <div>
+            <p>
+              Facebook URL is :
+            </p>
+            <p>
+            https://www.facebook.com/
+            <input
+              style={style.input}
+              type="text"
+              //defaultValue = {facebookUsername}
+              value = {facebookUsername}
+              onChange={(e)=>{
+                this.setState({
+                  facebookUsername : e.target.value,
+                  facebookUsernameError : ''
+                })
+              }}
+              placeholder="fashiongrunge"
+            />
+            <input
+              style={style.button}
+              type="button"
+              value="Check other Urls"
+              onClick={()=>{
+                this.checkValidUrls()
+              }}
+            />
+            </p>
+            
+          </div>
+          <div>
+            {instagramUrl !== '' &&
+            <p>
+              Instagram URL is : 
+              <a href={instagramUrl} target="_blank" rel="noopener noreferrer">
+               <span style={style.urls}>
+               {instagramUrl}
+               </span>
+              </a>
+            </p>
+            }
+            {twitterUrl !== '' &&
+            <p>
+              Twitter URL is : 
+              <a href={twitterUrl} target="_blank" rel="noopener noreferrer">
+               <span style={style.urls}>
+               {twitterUrl}
+               </span>
+              </a>
+            </p>
+            }
+            {pinterestUrl !== '' &&
+            <p>
+              Pinterest URL is : 
+              <a href={pinterestUrl} target="_blank" rel="noopener noreferrer">
+               <span style={style.urls}>
+               {pinterestUrl}
+               </span>
+              </a>
+            </p>
+            }
+          </div>
+        </header>
+      </div>
+    );
+  }
 }
 
 export default App;
