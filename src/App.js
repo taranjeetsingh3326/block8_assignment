@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import {NotificationManager} from 'react-notifications';
+import socialService from './Services/social';
 
 let style = {
   appheader : {
@@ -43,7 +44,7 @@ class App extends React.Component {
     }
   }
 
-  checkValidUrls = () => {
+  checkValidUrls = async () => {
     if( this.state.facebookUsername === '' ){
       NotificationManager.error('Please enter valid Username', 'Error!');
       this.setState({
@@ -52,11 +53,20 @@ class App extends React.Component {
      return false;
     }
 
-    this.setState({
+    let urls = {
       instagramUrl : `https://www.instagram.com/${ this.state.facebookUsername}`,
       twitterUrl : `https://twitter.com/${ this.state.facebookUsername}`,
       pinterestUrl : `https://in.pinterest.com/${ this.state.facebookUsername}`
-    })
+    }
+    let facebookUrl = `https://www.facebook.com/${ this.state.facebookUsername}`
+
+    let response = await socialService.fetchStatus( facebookUrl);
+    console.log(
+      '**response**', response
+    );
+    this.setState(
+      urls
+    )
   }
 
   render() {
